@@ -1,0 +1,17 @@
+{
+  "name": "jamtap",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:ajakate/jamtap.git",
+  "author": "Ajay Jakate <ajay.jakate@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "watch": "shadow-cljs watch app"
+  },
+  "devDependencies": {
+    "shadow-cljs": "^2.11.0"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.11.0"
+  }
+}
