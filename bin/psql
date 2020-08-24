@@ -1,0 +1,2 @@
+#! /bin/bash
+docker exec -it jamtap_db_1 psql -U jamtap_user

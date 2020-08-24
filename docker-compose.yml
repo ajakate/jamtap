@@ -1,0 +1,16 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:12.4
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data:delegated
+    environment:
+      POSTGRES_USER: jamtap_user
+      POSTGRES_PASSWORD: jamtap_password
+
+volumes:
+  db-data:
