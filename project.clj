@@ -47,7 +47,7 @@
   
   :source-paths ["src/clj" "src/cljs"]
   :test-paths ["test/clj"]
-  :resource-paths ["resources"]
+  :resource-paths ["resources" "target/cljsbuild"]
   :target-path "target/%s/"
   :main ^:skip-aot jamtap.core
 
