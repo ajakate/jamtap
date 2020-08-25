@@ -16,3 +16,4 @@ profiles.clj
 /log
 
 .vscode
+.shadow-cljs
