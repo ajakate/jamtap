@@ -19,3 +19,19 @@ WHERE id = :id
 -- :doc deletes a user record given the id
 DELETE FROM users
 WHERE id = :id
+
+-- :name get-active-tracks :? :*
+-- :doc gets the active tracks
+select id, name, started_at, creator
+from tracks where finished_at is null
+order by started_at desc
+
+-- :name get-track :? :1
+-- :doc gets a track
+select * from tracks where id = :id
+
+-- :name create-track! :! :n
+-- :doc creates a new track record
+INSERT into tracks
+(name, started_at, creator)
+values (:name, :started_at, :creator)
