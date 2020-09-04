@@ -6,11 +6,6 @@ services:
     restart: always
     ports:
       - 5432:5432
-    volumes:
-      - db-data:/var/lib/postgresql/data:delegated
     environment:
-      POSTGRES_USER: jamtap_user
-      POSTGRES_PASSWORD: jamtap_password
-
-volumes:
-  db-data:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password

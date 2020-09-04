@@ -1,0 +1,12 @@
+#! /bin/bash
+docker exec -it jamtap_db_1 psql -U postgres -c 'drop database if exists dev'
+docker exec -it jamtap_db_1 psql -U postgres -c 'drop database if exists test'
+docker exec -it jamtap_db_1 psql -U postgres -c 'create database test'
+docker exec -it jamtap_db_1 psql -U postgres -c 'create database dev'
+
+docker exec -it jamtap_db_1 psql -U postgres -c 'DROP user IF EXISTS jamtap_user'
+docker exec -it jamtap_db_1 psql -U postgres -c "create user jamtap_user with password 'jamtap_password'"
+
+docker exec -it jamtap_db_1 psql -U postgres -c 'grant all privileges on database dev to jamtap_user'
+docker exec -it jamtap_db_1 psql -U postgres -c 'grant all privileges on database test to jamtap_user'
+docker exec -it jamtap_db_1 psql -U postgres -c 'grant jamtap_user to postgres'
