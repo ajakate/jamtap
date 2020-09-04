@@ -17,5 +17,7 @@
    ["/" {:get home-page}]
    ["/docs" {:get (fn [_]
                     (-> (response/ok (-> "docs/docs.md" io/resource slurp))
-                        (response/header "Content-Type" "text/plain; charset=utf-8")))}]])
+                        (response/header "Content-Type" "text/plain; charset=utf-8")))}]
+   ["/time" {:get (fn [_] 
+                    {:body {:server_time (java.time.LocalDateTime/now)}})}]])
 
