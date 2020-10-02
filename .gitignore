@@ -18,3 +18,4 @@ profiles.clj
 .vscode
 .shadow-cljs
 .calva
+.DS_Store
