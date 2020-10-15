@@ -68,6 +68,18 @@
     (-> route :data :view)))
 
 (rf/reg-sub
+ :common/query-params
+ :<- [:common/route]
+ (fn [route _]
+   (-> route :query-params)))
+
+(rf/reg-sub
+ :common/path-params
+ :<- [:common/route]
+ (fn [route _]
+   (-> route :path-params)))
+
+(rf/reg-sub
   :docs
   (fn [db _]
     (:docs db)))
