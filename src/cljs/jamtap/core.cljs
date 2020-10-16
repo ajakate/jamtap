@@ -51,19 +51,34 @@
   (let [active (:active @(rf/subscribe [:common/query-params]))]
     [:div "getting tracks where active is" active]))
 
+(defn do-continue [poo]
+  (fn []
+    (rf/dispatch [:set-new-fields poo])
+    (rf/dispatch [:common/navigate :list-tracks])
+    ))
+
 (defn new-track []
-  (let [type @(rf/subscribe [:common/path-params])]
+  (r/with-let [draft (r/atom {})]
     [:section.section>div.container>div.content
      [:div.field
       [:label.label "What shall we call your jam sesh?"]
       [:div.control
-       [:input.input {:type "text" :placeholder "Joe's basement hang 4/20/19"}]]]
+       [:input.input {:type "text"
+                      :placeholder "Joe's basement hang 4/20/19"
+                      :on-change #(swap! draft assoc :name (.. % -target -value))
+                      :value (:name @draft)}]]]
      [:div.field
       [:label.label "What's YOUR name?"]
       [:div.control
-       [:input.input {:type "text" :placeholder "Alan"}]]]
+       [:input.input {:type "text"
+                      :placeholder "Alan"
+                      :on-change #(swap! draft assoc :creator (.. % -target -value))
+                      :value (:creator @draft)}]]]
      [:div.control
-      [:button.button.is-link "Continue"]]]))
+      [:button.button.is-link
+      ;;  {:on-click (do-continue @draft)} "Continue"]]]))
+       {:on-click #((rf/dispatch [:set-new-fields @draft])
+                    (rf/dispatch [:set-new-fields @draft]))} "Continue"]]]))
 
 (defn main-page []
   [:> ui/Box {:m "auto" :p 4}

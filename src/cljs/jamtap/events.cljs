@@ -30,6 +30,11 @@
   (fn [db [_ docs]]
     (assoc db :docs docs)))
 
+(rf/reg-event-db
+ :set-new-fields
+ (fn [db [_ fields]]
+   (assoc db :form/new fields)))
+
 (rf/reg-event-fx
   :fetch-docs
   (fn [_ _]
