@@ -58,27 +58,28 @@
     ))
 
 (defn new-track []
-  (r/with-let [draft (r/atom {})]
-    [:section.section>div.container>div.content
-     [:div.field
-      [:label.label "What shall we call your jam sesh?"]
-      [:div.control
-       [:input.input {:type "text"
-                      :placeholder "Joe's basement hang 4/20/19"
-                      :on-change #(swap! draft assoc :name (.. % -target -value))
-                      :value (:name @draft)}]]]
-     [:div.field
-      [:label.label "What's YOUR name?"]
-      [:div.control
-       [:input.input {:type "text"
-                      :placeholder "Alan"
-                      :on-change #(swap! draft assoc :creator (.. % -target -value))
-                      :value (:creator @draft)}]]]
-     [:div.control
-      [:button.button.is-link
-      ;;  {:on-click (do-continue @draft)} "Continue"]]]))
-       {:on-click #((rf/dispatch [:set-new-fields @draft])
-                    (rf/dispatch [:set-new-fields @draft]))} "Continue"]]]))
+  (if @(rf/subscribe [:show-form])
+    (r/with-let [draft (r/atom {})]
+      [:section.section>div.container>div.content
+       [:div.field
+        [:label.label "What shall we call your jam sesh?"]
+        [:div.control
+         [:input.input {:type "text"
+                        :placeholder "Joe's basement hang 4/20/19"
+                        :on-change #(swap! draft assoc :name (.. % -target -value))
+                        :value (:name @draft)}]]]
+       [:div.field
+        [:label.label "What's YOUR name?"]
+        [:div.control
+         [:input.input {:type "text"
+                        :placeholder "Alan"
+                        :on-change #(swap! draft assoc :creator (.. % -target -value))
+                        :value (:creator @draft)}]]]
+       [:div.control
+        [:button.button.is-link
+         {:on-click #((rf/dispatch [:set-new-fields @draft])
+                      (rf/dispatch [:set-show-form false]))} "Continue"]]])
+    [:div "fucka you danny"]))
 
 (defn main-page []
   [:> ui/Box {:m "auto" :p 4}
@@ -103,10 +104,9 @@
           :controllers [{:start (fn [_] (rf/dispatch [:page/init-home]))}]}]
     ["/about" {:name :about
                :view about-page}]
-    ["/main" {:name :main
-              :view main-page}]
     ["/tracks/new" {:name :new-track
-                    :view new-track}]
+                    :view new-track
+                    :controllers [{:start (fn [_] (rf/dispatch [:set-show-form true]))}]}]
     ["/tracks" {:name :list-tracks
                 :view list-tracks}]]))
 

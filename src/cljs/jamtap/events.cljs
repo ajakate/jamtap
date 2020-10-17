@@ -35,6 +35,11 @@
  (fn [db [_ fields]]
    (assoc db :form/new fields)))
 
+(rf/reg-event-db
+ :set-show-form
+ (fn [db [_ show-form]]
+   (assoc db :show-form show-form)))
+
 (rf/reg-event-fx
   :fetch-docs
   (fn [_ _]
@@ -54,6 +59,11 @@
     {:dispatch [:fetch-docs]}))
 
 ;;subscriptions
+
+(rf/reg-sub
+ :show-form
+ (fn [db _]
+   (-> db :show-form)))
 
 (rf/reg-sub
   :common/route
