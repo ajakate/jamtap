@@ -30,6 +30,11 @@
   (fn [db [_ docs]]
     (assoc db :docs docs)))
 
+(rf/reg-event-db
+ :set-new-fields
+ (fn [db [_ fields]]
+   (assoc db :form/new fields)))
+
 (rf/reg-event-fx
   :fetch-docs
   (fn [_ _]
@@ -66,6 +71,18 @@
   :<- [:common/route]
   (fn [route _]
     (-> route :data :view)))
+
+(rf/reg-sub
+ :common/query-params
+ :<- [:common/route]
+ (fn [route _]
+   (-> route :query-params)))
+
+(rf/reg-sub
+ :common/path-params
+ :<- [:common/route]
+ (fn [route _]
+   (-> route :path-params)))
 
 (rf/reg-sub
   :docs

@@ -25,7 +25,7 @@
   (r/with-let [expanded? (r/atom false)]
     [:nav.navbar.is-info>div.container
      [:div.navbar-brand
-      [:a.navbar-item {:href "/" :style {:font-weight :bold}} "jamtap"]
+      [:a.navbar-item {:href "/#/main" :style {:font-weight :bold}} "jamtap"]
       [:span.navbar-burger.burger
        {:data-target :nav-menu
         :on-click #(swap! expanded? not)
@@ -34,21 +34,9 @@
      [:div#nav-menu.navbar-menu
       {:class (when @expanded? :is-active)}
       [:div.navbar-start
-       [nav-link "#/" "Home" :home]
-       [nav-link "#/about" "About" :about]]]]))
-
-(defn navbar1 []
-  [:> ui/AppBar {:position "static"}
-   [:> ui/Toolbar
-    [:> ui/Box {:p 2}
-     [:> ui/Typography {:variant "h6"} "Jamtap"]]
-    [:> ui/Box {:m 2}
-     [:> ui/ButtonGroup
-      [:> ui/Button {:color "inherit" :href "/#/tracks/new"} "Create Track"]
-      [:> ui/Button {:color "inherit" :href "/#/tracks/list"} "Join Track"]
-      [:> ui/Button {:color "inherit" :href "/#/tracks/list"} "Find Old Track"]
-      [:> ui/Button {:color "inherit" :href "/#/main"} "Test"]]]]])
-
+       [nav-link "#/tracks/new" "Create Track" :about]
+       [nav-link "/#/tracks?active=true" "Join Track" :about]
+       [nav-link "/#/tracks?active=false" "Find Old Track" :about]]]]))
 
 (defn about-page []
   [:section.section>div.container>div.content
@@ -60,22 +48,49 @@
      [:div {:dangerouslySetInnerHTML {:__html (md->html docs)}}])])
 
 (defn list-tracks []
-  [:div "click below to whatever your new track"])
+  (let [active (:active @(rf/subscribe [:common/query-params]))]
+    [:div "getting tracks where active is" active]))
+
+(defn do-continue [poo]
+  (fn []
+    (rf/dispatch [:set-new-fields poo])
+    (rf/dispatch [:common/navigate :list-tracks])
+    ))
 
 (defn new-track []
-  [:div "click below to create your new track"])
+  (r/with-let [draft (r/atom {})]
+    [:section.section>div.container>div.content
+     [:div.field
+      [:label.label "What shall we call your jam sesh?"]
+      [:div.control
+       [:input.input {:type "text"
+                      :placeholder "Joe's basement hang 4/20/19"
+                      :on-change #(swap! draft assoc :name (.. % -target -value))
+                      :value (:name @draft)}]]]
+     [:div.field
+      [:label.label "What's YOUR name?"]
+      [:div.control
+       [:input.input {:type "text"
+                      :placeholder "Alan"
+                      :on-change #(swap! draft assoc :creator (.. % -target -value))
+                      :value (:creator @draft)}]]]
+     [:div.control
+      [:button.button.is-link
+      ;;  {:on-click (do-continue @draft)} "Continue"]]]))
+       {:on-click #((rf/dispatch [:set-new-fields @draft])
+                    (rf/dispatch [:set-new-fields @draft]))} "Continue"]]]))
 
 (defn main-page []
   [:> ui/Box {:m "auto" :p 4}
    [:> ui/ButtonGroup {:orientation "vertical"}
     [:> ui/Button {:color "primary" :href "/#/tracks/new"} "Create Track"]
-    [:> ui/Button {:color "primary" :href "/#/tracks/list"} "Join Track"]
-    [:> ui/Button {:color "primary" :href "/#/tracks/list"} "Find Old Track"]]])
+    [:> ui/Button {:color "primary" :href "/#/tracks?active=true"} "Join Track"]
+    [:> ui/Button {:color "primary" :href "/#/tracks?active=false"} "Find Old Track"]]])
 
 (defn page []
   (if-let [page @(rf/subscribe [:common/page])]
     [:div
-     [navbar1]
+     [navbar]
      [page]]))
 
 (defn navigate! [match _]
@@ -84,16 +99,16 @@
 (def router
   (reitit/router
    [["/" {:name        :home
-          :view        #'home-page
+          :view        home-page
           :controllers [{:start (fn [_] (rf/dispatch [:page/init-home]))}]}]
     ["/about" {:name :about
-               :view #'about-page}]
+               :view about-page}]
     ["/main" {:name :main
-              :view #'main-page}]
-    ["/tracks/new" {:name :new_track
-              :view #'new-track}]
-    ["/tracks/list" {:name :list-tracks
-                    :view #'list-tracks}]]))
+              :view main-page}]
+    ["/tracks/new" {:name :new-track
+                    :view new-track}]
+    ["/tracks" {:name :list-tracks
+                :view list-tracks}]]))
 
 (defn start-router! []
   (rfe/start!

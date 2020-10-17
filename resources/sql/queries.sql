@@ -23,7 +23,7 @@ WHERE id = :id
 -- :name get-active-tracks :? :*
 -- :doc gets the active tracks
 select id, name, started_at, creator
-from tracks where finished_at is null
+from tracks --where finished_at is null
 order by started_at desc
 
 -- :name get-track :? :1

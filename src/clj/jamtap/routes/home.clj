@@ -19,5 +19,7 @@
                     (-> (response/ok (-> "docs/docs.md" io/resource slurp))
                         (response/header "Content-Type" "text/plain; charset=utf-8")))}]
    ["/time" {:get (fn [_] 
-                    {:body {:server_time (java.time.LocalDateTime/now)}})}]])
+                    {:body {:server_time (System/currentTimeMillis)}})}]
+   ["/tracks" {:get (fn [_]
+                    (response/ok (db/get-active-tracks)))}]])
 

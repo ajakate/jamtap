@@ -6,7 +6,8 @@
   "author": "Ajay Jakate <ajay.jakate@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "watch": "shadow-cljs watch app"
+    "watch": "shadow-cljs watch app",
+    "repl": "shadow-cljs cljs-repl app"
   },
   "devDependencies": {
     "shadow-cljs": "^2.11.0"
