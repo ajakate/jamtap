@@ -11,8 +11,7 @@
    [jamtap.events]
    [reitit.core :as reitit]
    [reitit.frontend.easy :as rfe]
-   [clojure.string :as string]
-   ["@material-ui/core" :as ui])
+   [clojure.string :as string])
   (:import goog.History))
 
 (defn nav-link [uri title page]
@@ -25,7 +24,7 @@
   (r/with-let [expanded? (r/atom false)]
     [:nav.navbar.is-info>div.container
      [:div.navbar-brand
-      [:a.navbar-item {:href "/#/main" :style {:font-weight :bold}} "jamtap"]
+      [:a.navbar-item {:href "/" :style {:font-weight :bold}} "jamtap"]
       [:span.navbar-burger.burger
        {:data-target :nav-menu
         :on-click #(swap! expanded? not)
@@ -80,13 +79,6 @@
          {:on-click #((rf/dispatch [:set-new-fields @draft])
                       (rf/dispatch [:set-show-form false]))} "Continue"]]])
     [:div "fucka you danny"]))
-
-(defn main-page []
-  [:> ui/Box {:m "auto" :p 4}
-   [:> ui/ButtonGroup {:orientation "vertical"}
-    [:> ui/Button {:color "primary" :href "/#/tracks/new"} "Create Track"]
-    [:> ui/Button {:color "primary" :href "/#/tracks?active=true"} "Join Track"]
-    [:> ui/Button {:color "primary" :href "/#/tracks?active=false"} "Find Old Track"]]])
 
 (defn page []
   (if-let [page @(rf/subscribe [:common/page])]
