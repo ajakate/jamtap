@@ -9,6 +9,7 @@
    [markdown.core :refer [md->html]]
    [jamtap.ajax :as ajax]
    [jamtap.events]
+   [jamtap.time :as poo]
    [reitit.core :as reitit]
    [reitit.frontend.easy :as rfe]
    [clojure.string :as string])
@@ -50,11 +51,12 @@
   (let [active (:active @(rf/subscribe [:common/query-params]))]
     [:div "getting tracks where active is" active]))
 
-(defn do-continue [poo]
-  (fn []
-    (rf/dispatch [:set-new-fields poo])
-    (rf/dispatch [:common/navigate :list-tracks])
-    ))
+(defn start-page []
+  [:section.section>div.container>div.content
+   (if-let [offset @(rf/subscribe [:offset])]
+     [:div "omg its hurrr"]
+     [:div  [:div.has-text-centered.has-text-weight-semibold.pb-4 "Loading sum crunchny syncs..."]
+      [:progress.progress.is-large.is-primary "looooooading"]])])
 
 (defn new-track []
   (if @(rf/subscribe [:show-form])
@@ -77,8 +79,9 @@
        [:div.control
         [:button.button.is-link
          {:on-click #((rf/dispatch [:set-new-fields @draft])
-                      (rf/dispatch [:set-show-form false]))} "Continue"]]])
-    [:div "fucka you danny"]))
+                      (rf/dispatch [:set-show-form false])
+                      (rf/dispatch [:sync-clock]))} "Continue"]]])
+    [start-page]))
 
 (defn page []
   (if-let [page @(rf/subscribe [:common/page])]
