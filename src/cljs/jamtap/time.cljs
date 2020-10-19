@@ -5,6 +5,8 @@
    [cognitect.transit :as transit]
    [re-frame.core :as rf]))
 
+(declare do-sync)
+
 (def sync-count 30)
 
 (defn current-time []
@@ -16,41 +18,24 @@
 (defn calc-offset [{:keys [start end server]} time]
   (/ (- (* 2 server) end start) 2))
 
-(defn aggregate-times [times]
-  (.log js/console "plz be ")
-  (let [timess (map calc-offset (vals @times))]
-    (.log js/console "YUSSSSSS" (str timess)))
-  (mean times))
-
-(defn server-time-handler [index times-atom]
+(defn server-time-handler [start-time times-atom]
   (fn [response]
-    ;; (.log js/console "now we handle"  index @times-atom)
-    (swap! times-atom assoc-in [index :server] (:server_time response))
-    (swap! times-atom assoc-in [index :end] (current-time))
+    (swap! times-atom conj
+           {:start start-time
+            :server (:server_time response)
+            :end (current-time)})
+    (do-sync times-atom)))
 
-
-    (if
-     (= sync-count (count (filter #(not= (:end %) nil) (vals @times-atom))))
-      (rf/dispatch [:set-offset @times-atom])
-      (aggregate-times times-atom))
-
-
-
-    (.log js/console "FIRST"  (get-in @times-atom [0 :start]))
-    (.log js/console "LOOOOOK"  (get-in @times-atom [0 :server]))
-    (.log js/console "AGAIN"  (get-in @times-atom [0 :end]))
-    ;; (rf/dispatch [:set-offset @times-atom])
-    ))
-
-(defn get-time-from-server [index times-atom]
-  (GET "/time" {:handler (server-time-handler index times-atom)}))
-
-(defn fig [index times-atom]
-  (swap! times-atom assoc index {:start (current-time)})
-  (.log js/console "we ok??" @times-atom)
-  (get-time-from-server index times-atom))
+(defn do-sync [times-atom]
+  (if (= sync-count (count @times-atom))
+    (rf/dispatch
+     [:set-offset
+      (->> @times-atom
+           (map calc-offset)
+           mean)])
+    (let [now (current-time)]
+      (GET "/time" {:handler (server-time-handler now times-atom)}))))
 
 (defn trigger-sync []
-  (let [times (atom {})]
-    (.log js/console "hiiiiiiiiiiii" "nooo :()")
-    (dotimes [n sync-count] (fig n times))))
+  (let [times (atom [])]
+    (do-sync times)))

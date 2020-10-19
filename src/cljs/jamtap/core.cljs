@@ -54,7 +54,7 @@
 (defn start-page []
   [:section.section>div.container>div.content
    (if-let [offset @(rf/subscribe [:offset])]
-     [:div "omg its hurrr"]
+     [:div "omg its hurrr: " offset]
      [:div  [:div.has-text-centered.has-text-weight-semibold.pb-4 "Loading sum crunchny syncs..."]
       [:progress.progress.is-large.is-primary "looooooading"]])])
 
