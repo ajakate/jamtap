@@ -7,13 +7,13 @@
 
 (declare do-sync)
 
-(def sync-count 30)
+(def sync-count 20)
 
 (defn current-time []
   (.now js/Date))
 
 (defn mean [items]
-  (/ (reduce + items) (count items)))
+  (.round js/Math (/ (reduce + items) (count items))))
 
 (defn calc-offset [{:keys [start end server]} time]
   (/ (- (* 2 server) end start) 2))

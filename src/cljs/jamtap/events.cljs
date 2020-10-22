@@ -4,7 +4,9 @@
    [ajax.core :as ajax]
    [reitit.frontend.easy :as rfe]
    [reitit.frontend.controllers :as rfc]
-   [jamtap.time :as jtime]))
+   [jamtap.time :as jtime]
+   ;; TODO: make sure we use this library or ledelete
+   [cljs-time.coerce :as c]))
 
 ;;dispatchers
 
@@ -30,6 +32,11 @@
  :set-docs
  (fn [db [_ docs]]
    (assoc db :docs docs)))
+
+(rf/reg-event-db
+ :set-active-track
+ (fn [db [_ track]]
+   (assoc db :active-track track)))
 
 (rf/reg-event-db
  :set-response
@@ -58,6 +65,20 @@
                  :uri             "/docs"
                  :response-format (ajax/raw-response-format)
                  :on-success       [:set-docs]}}))
+
+(rf/reg-event-fx
+ :create-track
+ (fn [{:keys [db]} [_ _]]
+   {:http-xhrio {:method          :post
+                 :uri             "/tracks"
+                 :params {:creator (get-in db [:form/new :creator])
+                          :name (get-in db [:form/new :name])
+                          :started_at   (+ (:offset db) (jtime/current-time))}
+                 :format          (ajax/json-request-format)
+                 :response-format  (ajax/json-response-format {:keywords? true}
+                                                              )
+                 :on-success       [:set-active-track]
+                 :on-failure [:set-active-track]}}))
 
 (rf/reg-event-fx
  :sync-clock

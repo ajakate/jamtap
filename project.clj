@@ -38,6 +38,8 @@
                  [thheller/shadow-cljs "2.10.17" :scope "provided"]
                  [re-frame "1.0.0"]
                  [reagent "0.10.0"]
+                 [clj-time "0.15.2"]
+                 [com.andrewmcveigh/cljs-time "0.5.2"]
                  
                  ; TODO: not sure what these do
                  [day8.re-frame/http-fx "0.1.6"]

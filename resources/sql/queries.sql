@@ -30,8 +30,9 @@ order by started_at desc
 -- :doc gets a track
 select * from tracks where id = :id
 
--- :name create-track! :! :n
+-- :name create-track! :<! :1
 -- :doc creates a new track record
 INSERT into tracks
 (name, started_at, creator)
 values (:name, :started_at, :creator)
+RETURNING *;

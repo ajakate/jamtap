@@ -9,7 +9,6 @@
    [markdown.core :refer [md->html]]
    [jamtap.ajax :as ajax]
    [jamtap.events]
-   [jamtap.time :as poo]
    [reitit.core :as reitit]
    [reitit.frontend.easy :as rfe]
    [clojure.string :as string])
@@ -54,9 +53,14 @@
 (defn start-page []
   [:section.section>div.container>div.content
    (if-let [offset @(rf/subscribe [:offset])]
-     [:div "omg its hurrr: " offset]
-     [:div  [:div.has-text-centered.has-text-weight-semibold.pb-4 "Loading sum crunchny syncs..."]
-      [:progress.progress.is-large.is-primary "looooooading"]])])
+     [:div.card.has-text-centered
+      [:div.card-content "Click below when you're jam starts"]
+      [:div.card-content>button.button.is-link
+       {:on-click #(rf/dispatch [:create-track {:poo "yup"}])}
+       "Start!"]]
+     [:div
+      [:div.has-text-centered.has-text-weight-semibold.pb-4 "Loading sum crunchny syncs..."]
+      [:progress.progress.is-large.is-primary]])])
 
 (defn new-track []
   (if @(rf/subscribe [:show-form])
@@ -78,9 +82,10 @@
                         :value (:creator @draft)}]]]
        [:div.control
         [:button.button.is-link
-         {:on-click #((rf/dispatch [:set-new-fields @draft])
-                      (rf/dispatch [:set-show-form false])
-                      (rf/dispatch [:sync-clock]))} "Continue"]]])
+         {:on-click #((do
+                        (rf/dispatch [:set-new-fields @draft])
+                        (rf/dispatch [:set-show-form false])
+                        (rf/dispatch [:sync-clock])))} "Continue"]]])
     [start-page]))
 
 (defn page []
