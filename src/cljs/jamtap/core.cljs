@@ -56,11 +56,14 @@
      [:div.card.has-text-centered
       [:div.card-content "Click below when you're jam starts"]
       [:div.card-content>button.button.is-link
-       {:on-click #(rf/dispatch [:create-track {:poo "yup"}])}
+       {:on-click #(rf/dispatch [:create-track])}
        "Start!"]]
      [:div
       [:div.has-text-centered.has-text-weight-semibold.pb-4 "Loading sum crunchny syncs..."]
       [:progress.progress.is-large.is-primary]])])
+
+(defn view-track []
+  [:div "oh no"])
 
 (defn new-track []
   (if @(rf/subscribe [:show-form])
@@ -107,6 +110,8 @@
     ["/tracks/new" {:name :new-track
                     :view new-track
                     :controllers [{:start (fn [_] (rf/dispatch [:set-show-form true]))}]}]
+    ["/trackss/:id" {:name :view-track
+                :view view-track}]
     ["/tracks" {:name :list-tracks
                 :view list-tracks}]]))
 

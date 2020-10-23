@@ -36,7 +36,9 @@
 (rf/reg-event-db
  :set-active-track
  (fn [db [_ track]]
-   (assoc db :active-track track)))
+   (assoc db :active-track track)
+   ;; TODO: SQL QUERY RETURN JUST THE ID??
+   (rfe/push-state :view-track {:id 1})))
 
 (rf/reg-event-db
  :set-response
@@ -68,7 +70,7 @@
 
 (rf/reg-event-fx
  :create-track
- (fn [{:keys [db]} [_ _]]
+ (fn [{:keys [db]} [_]]
    {:http-xhrio {:method          :post
                  :uri             "/tracks"
                  :params {:creator (get-in db [:form/new :creator])
