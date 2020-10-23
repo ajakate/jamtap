@@ -29,5 +29,8 @@
               (db/create-track!
                {:creator creator
                 :name name
-                :started_at (c/to-timestamp (c/from-long started_at))})))}]])
-
+                :started_at (c/to-timestamp (c/from-long started_at))})))}]
+   ["/tracks/:id"
+    {:get (fn [req]
+            (let [id (-> req :path-params :id Integer/parseInt)]
+              (response/ok (db/get-track {:id id}))))}]])

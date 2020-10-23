@@ -110,10 +110,14 @@
     ["/tracks/new" {:name :new-track
                     :view new-track
                     :controllers [{:start (fn [_] (rf/dispatch [:set-show-form true]))}]}]
-    ["/trackss/:id" {:name :view-track
-                :view view-track}]
+    ["/tracks/:id" {:name :view-track
+                    :view view-track
+                    :controllers [{:parameters {:path [:id]}
+                                   :start (fn [{{:keys [id]} :path}]
+                                            (rf/dispatch [:fetch-track id]))}]}]
     ["/tracks" {:name :list-tracks
-                :view list-tracks}]]))
+                :view list-tracks}]]
+   {:conflicts nil}))
 
 (defn start-router! []
   (rfe/start!

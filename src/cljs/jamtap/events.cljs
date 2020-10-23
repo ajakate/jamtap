@@ -34,11 +34,15 @@
    (assoc db :docs docs)))
 
 (rf/reg-event-db
+ :set-track-url
+ (fn [_ [_ track]]
+   ;; TODO: SQL QUERY RETURN JUST THE ID??
+   (rfe/push-state :view-track {:id (:id track)})))
+
+(rf/reg-event-db
  :set-active-track
  (fn [db [_ track]]
-   (assoc db :active-track track)
-   ;; TODO: SQL QUERY RETURN JUST THE ID??
-   (rfe/push-state :view-track {:id 1})))
+   (assoc db :active-track track)))
 
 (rf/reg-event-db
  :set-response
@@ -61,6 +65,14 @@
    (assoc db :show-form show-form)))
 
 (rf/reg-event-fx
+ :fetch-track
+ (fn [_ [_ id]]
+   {:http-xhrio {:method          :get
+                 :uri             (str "/tracks/" id)
+                 :response-format (ajax/json-response-format {:keywords? true})
+                 :on-success       [:set-active-track]}}))
+
+(rf/reg-event-fx
  :fetch-docs
  (fn [_ _]
    {:http-xhrio {:method          :get
@@ -77,10 +89,9 @@
                           :name (get-in db [:form/new :name])
                           :started_at   (+ (:offset db) (jtime/current-time))}
                  :format          (ajax/json-request-format)
-                 :response-format  (ajax/json-response-format {:keywords? true}
-                                                              )
-                 :on-success       [:set-active-track]
-                 :on-failure [:set-active-track]}}))
+                 :response-format  (ajax/json-response-format {:keywords? true})
+                 :on-success       [:set-track-url]
+                 :on-failure [:set-track-url]}}))
 
 (rf/reg-event-fx
  :sync-clock
