@@ -25,11 +25,9 @@
     {:get (fn [_]
             (response/ok (db/get-active-tracks)))
      :post (fn [{{:keys [creator name started_at]} :body-params}]
-
-             (println creator)
-             (println name)
-             (println  started_at)
-             (response/ok (db/create-track! {:creator creator
-                                             :name name
-                                             :started_at (c/to-timestamp (c/from-long started_at))})))}]])
+             (response/ok
+              (db/create-track!
+               {:creator creator
+                :name name
+                :started_at (c/to-timestamp (c/from-long started_at))})))}]])
 
