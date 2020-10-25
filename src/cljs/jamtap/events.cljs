@@ -42,7 +42,12 @@
 (rf/reg-event-db
  :set-active-track
  (fn [db [_ track]]
-   (assoc db :active-track track)))
+   (assoc db :active-track track :track-loading false)))
+
+(rf/reg-event-db
+ :set-track-loading
+ (fn [db [_ loading]]
+   (assoc db :track-loading loading)))
 
 (rf/reg-event-db
  :set-response
@@ -114,6 +119,16 @@
  :offset
  (fn [db _]
    (-> db :offset)))
+
+(rf/reg-sub
+ :track-loading
+ (fn [db _]
+   (-> db :track-loading)))
+
+(rf/reg-sub
+ :get-active-track
+ (fn [db _]
+   (-> db :active-track)))
 
 (rf/reg-sub
  :show-form

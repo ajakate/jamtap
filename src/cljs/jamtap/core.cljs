@@ -58,12 +58,32 @@
       [:div.card-content>button.button.is-link
        {:on-click #(rf/dispatch [:create-track])}
        "Start!"]]
+     ;; TODO: refactor
      [:div
       [:div.has-text-centered.has-text-weight-semibold.pb-4 "Loading sum crunchny syncs..."]
       [:progress.progress.is-large.is-primary]])])
 
+(defn show-open-track [track]
+  (let [offset @(rf/subscribe [:offset])]
+    [:div.card
+     [:div.card-header
+      [:div.card-content
+       [:p.title.is-4 (:name track)]
+       [:p.subtitle.is-6.is-italic (str "by: " (:creator track))]]]
+     [:div.card-content
+      [:p (:started_at track)]]]))
+
 (defn view-track []
-  [:div "oh no"])
+  [:section.section>div.container>div.content
+   (if-let [loading @(rf/subscribe [:track-loading])]
+     [:div
+      [:div.has-text-centered.has-text-weight-semibold.pb-4
+       "Initializing your track..."]
+      [:progress.progress.is-large.is-primary]]
+     (let [track @(rf/subscribe [:get-active-track])]
+       (if (= nil (:finished_at track))
+         [show-open-track track]
+         [show-closed-track track])))])
 
 (defn new-track []
   (if @(rf/subscribe [:show-form])
@@ -114,6 +134,7 @@
                     :view view-track
                     :controllers [{:parameters {:path [:id]}
                                    :start (fn [{{:keys [id]} :path}]
+                                            (rf/dispatch [:set-track-loading true])
                                             (rf/dispatch [:fetch-track id]))}]}]
     ["/tracks" {:name :list-tracks
                 :view list-tracks}]]

@@ -70,7 +70,9 @@
                                  [prone "2020-01-17"]
                                  [ring/ring-devel "1.8.1"]
                                  [ring/ring-mock "0.4.0"]
+                                 ;; TODO: remove refrisk??
                                  [re-frisk "1.3.4"]
+                                 [day8.re-frame/re-frame-10x "0.7.0"]
                                  [binaryage/devtools "1.0.2"]]
                   :plugins      [[com.jakemccrary/lein-test-refresh "0.24.1"]
                                  [jonase/eastwood "0.3.5"]] 

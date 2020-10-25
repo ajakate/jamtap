@@ -39,3 +39,6 @@
 (defn trigger-sync []
   (let [times (atom [])]
     (do-sync times)))
+
+(defn format-running-time [server-time offset]
+  "poop")
