@@ -39,31 +39,27 @@
        [nav-link "/#/tracks?active=false" "Find Old Track" :about]]]]))
 
 (defn about-page []
-  [:section.section>div.container>div.content
-   [:img {:src "/img/warning_clojure.png"}]])
+  [:img {:src "/img/warning_clojure.png"}])
 
 (defn home-page []
-  [:section.section>div.container>div.content
-   (when-let [docs @(rf/subscribe [:docs])]
-     [:div {:dangerouslySetInnerHTML {:__html (md->html docs)}}])])
+  (when-let [docs @(rf/subscribe [:docs])]
+    [:div {:dangerouslySetInnerHTML {:__html (md->html docs)}}]))
 
 (defn list-tracks []
   (let [active (:active @(rf/subscribe [:common/query-params]))]
     [:div "getting tracks where active is" active]))
 
 (defn start-page []
-  ;; TODO: refactor the section.div
-  [:section.section>div.container>div.content
-   (if-let [offset @(rf/subscribe [:offset])]
-     [:div.card.has-text-centered
-      [:div.card-content "Click below when you're jam starts"]
-      [:div.card-content>button.button.is-link
-       {:on-click #(rf/dispatch [:create-track])}
-       "Start!"]]
+  (if-let [offset @(rf/subscribe [:offset])]
+    [:div.card.has-text-centered
+     [:div.card-content "Click below when you're jam starts"]
+     [:div.card-content>button.button.is-link
+      {:on-click #(rf/dispatch [:create-track])}
+      "Start!"]]
      ;; TODO: refactor the progress bar
-     [:div
-      [:div.has-text-centered.has-text-weight-semibold.pb-4 "Loading sum crunchny syncs..."]
-      [:progress.progress.is-large.is-primary]])])
+    [:div
+     [:div.has-text-centered.has-text-weight-semibold.pb-4 "Loading sum crunchny syncs..."]
+     [:progress.progress.is-large.is-primary]]))
 
 (defn show-open-track [track]
   (let [offset @(rf/subscribe [:offset])]
@@ -76,21 +72,20 @@
       [:p (jtime/format-running-time (:started_at track) offset)]]]))
 
 (defn view-track []
-  [:section.section>div.container>div.content
-   (if-let [loading @(rf/subscribe [:track-loading])]
-     [:div
-      [:div.has-text-centered.has-text-weight-semibold.pb-4
-       "Initializing your track..."]
-      [:progress.progress.is-large.is-primary]]
-     (let [track @(rf/subscribe [:get-active-track])]
-       (if (= nil (:finished_at track))
-         [show-open-track track]
-         [show-closed-track track])))])
+  (if-let [loading @(rf/subscribe [:track-loading])]
+    [:div
+     [:div.has-text-centered.has-text-weight-semibold.pb-4
+      "Initializing your track..."]
+     [:progress.progress.is-large.is-primary]]
+    (let [track @(rf/subscribe [:get-active-track])]
+      (if (= nil (:finished_at track))
+        [show-open-track track]
+        [show-closed-track track]))))
 
 (defn new-track []
   (if @(rf/subscribe [:show-form])
     (r/with-let [draft (r/atom {})]
-      [:section.section>div.container>div.content
+      [:div
        [:div.field
         [:label.label "What shall we call your jam sesh?"]
         [:div.control
@@ -117,7 +112,8 @@
   (if-let [page @(rf/subscribe [:common/page])]
     [:div
      [navbar]
-     [page]]))
+     [:section.section>div.container>div.content
+      [page]]]))
 
 (defn navigate! [match _]
   (rf/dispatch [:common/navigate match]))
