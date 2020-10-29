@@ -6,7 +6,10 @@
    [jamtap.middleware :as middleware]
    [ring.util.response]
    [ring.util.http-response :as response]
-   [clj-time.coerce :as c]))
+   [clj-time.coerce :as c])
+  (:import (java.util TimeZone)))
+
+(TimeZone/setDefault (TimeZone/getTimeZone "UTC"))
 
 (defn home-page [request]
   (layout/render request "home.html"))
@@ -29,7 +32,7 @@
               (db/create-track!
                {:creator creator
                 :name name
-                :started_at (c/to-timestamp (c/from-long started_at))})))}]
+                :started_at (c/to-sql-time (c/from-long started_at))})))}]
    ["/tracks/:id"
     {:get (fn [req]
             (let [id (-> req :path-params :id Integer/parseInt)]

@@ -33,7 +33,7 @@
  (fn [db [_ docs]]
    (assoc db :docs docs)))
 
-(rf/reg-event-db
+(rf/reg-event-fx
  :set-track-url
  (fn [_ [_ track]]
    ;; TODO: SQL QUERY RETURN JUST THE ID??
@@ -115,6 +115,7 @@
 
 ;;subscriptions
 
+;; TODO: set if null
 (rf/reg-sub
  :offset
  (fn [db _]

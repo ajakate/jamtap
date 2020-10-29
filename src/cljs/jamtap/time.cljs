@@ -3,6 +3,7 @@
    [ajax.core :refer [GET POST]]
    [luminus-transit.time :as time]
    [cognitect.transit :as transit]
+   [cljs-time.coerce :as c]
    [re-frame.core :as rf]))
 
 (declare do-sync)
@@ -40,5 +41,10 @@
   (let [times (atom [])]
     (do-sync times)))
 
+;; TODO: add hours
 (defn format-running-time [server-time offset]
-  "poop")
+  (let [start-millis (- (c/to-long server-time) offset)
+        running (-> (current-time) (- start-millis) (/ 1000) int)
+        minutes (quot running 60)
+        seconds (mod running 60)]
+    (str minutes ":" seconds)))

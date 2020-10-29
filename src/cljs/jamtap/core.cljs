@@ -9,6 +9,7 @@
    [markdown.core :refer [md->html]]
    [jamtap.ajax :as ajax]
    [jamtap.events]
+   [jamtap.time :as jtime]
    [reitit.core :as reitit]
    [reitit.frontend.easy :as rfe]
    [clojure.string :as string])
@@ -51,6 +52,7 @@
     [:div "getting tracks where active is" active]))
 
 (defn start-page []
+  ;; TODO: refactor the section.div
   [:section.section>div.container>div.content
    (if-let [offset @(rf/subscribe [:offset])]
      [:div.card.has-text-centered
@@ -58,7 +60,7 @@
       [:div.card-content>button.button.is-link
        {:on-click #(rf/dispatch [:create-track])}
        "Start!"]]
-     ;; TODO: refactor
+     ;; TODO: refactor the progress bar
      [:div
       [:div.has-text-centered.has-text-weight-semibold.pb-4 "Loading sum crunchny syncs..."]
       [:progress.progress.is-large.is-primary]])])
@@ -71,7 +73,7 @@
        [:p.title.is-4 (:name track)]
        [:p.subtitle.is-6.is-italic (str "by: " (:creator track))]]]
      [:div.card-content
-      [:p (:started_at track)]]]))
+      [:p (jtime/format-running-time (:started_at track) offset)]]]))
 
 (defn view-track []
   [:section.section>div.container>div.content
