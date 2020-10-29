@@ -4,9 +4,7 @@
    [ajax.core :as ajax]
    [reitit.frontend.easy :as rfe]
    [reitit.frontend.controllers :as rfc]
-   [jamtap.time :as jtime]
-   ;; TODO: make sure we use this library or ledelete
-   [cljs-time.coerce :as c]))
+   [jamtap.time :as jtime]))
 
 ;;dispatchers
 
