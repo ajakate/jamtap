@@ -70,6 +70,17 @@
        {:on-click #(rf/dispatch [:create-track])}
        "Start!"]])])
 
+(defn format-time [start offset elapsed-time]
+  (let [elapsed @elapsed-time]
+    [:p (jtime/format-running-time start (- offset elapsed))]))
+
+(defn running-clock [started_at offset]
+  (let [dummy (r/atom 0)]
+    (js/setInterval (fn [] (swap! dummy inc)) 1000)
+    (fn []
+      (let [_ @dummy]
+        [:p (jtime/format-running-time started_at offset)]))))
+
 (defn show-open-track [track]
   [offset-wrapper
    (fn [offset]
@@ -79,7 +90,7 @@
         [:p.title.is-4 (:name track)]
         [:p.subtitle.is-6.is-italic (str "by: " (:creator track))]]]
       [:div.card-content
-       [:p (jtime/format-running-time (:started_at track) offset)]]])])
+       [running-clock (:started_at track) offset]]])])
 
 (defn show-closed-track [_]
   [:div "ain't no thing"])

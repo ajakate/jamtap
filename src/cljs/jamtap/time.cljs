@@ -41,10 +41,15 @@
   (let [times (atom [])]
     (do-sync times)))
 
+(defn format-seconds [seconds]
+  (if (> 10 seconds)
+    (str "0" seconds)
+    seconds))
+
 ;; TODO: add hours
 (defn format-running-time [server-time offset]
   (let [start-millis (- (c/to-long server-time) offset)
         running (-> (current-time) (- start-millis) (/ 1000) int)
         minutes (quot running 60)
-        seconds (mod running 60)]
+        seconds (format-seconds (mod running 60))]
     (str minutes ":" seconds)))
