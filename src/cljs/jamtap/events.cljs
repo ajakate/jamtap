@@ -79,6 +79,7 @@
  (fn [db [_ show-form]]
    (assoc db :show-form show-form)))
 
+;; TODO: handle 401
 (rf/reg-event-fx
  :fetch-track
  (fn [_ [_ id]]
@@ -139,7 +140,6 @@
 
 ;;subscriptions
 
-;; TODO: set if null
 (rf/reg-sub
  :offset
  (fn [db _]
