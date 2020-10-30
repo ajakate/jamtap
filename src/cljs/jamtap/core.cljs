@@ -100,6 +100,7 @@
      [:div.control>button.button.is-link
       {:on-click #((rf/dispatch [:set-creator @draft]))} "Let's go!"]]))
 
+;; TODO: fix this comments next bit
 (defn list-comments []
   (r/with-let [comments (:comments @(rf/subscribe [:get-active-track]))]
     [:ul
