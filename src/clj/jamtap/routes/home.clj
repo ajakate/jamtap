@@ -14,6 +14,11 @@
 (defn home-page [request]
   (layout/render request "home.html"))
 
+(defn format-track [id]
+  (merge
+   (db/get-track {:id id})
+   {:comments (db/get-comments-for-track {:track_id id})}))
+
 (defn home-routes []
   [""
    {:middleware [middleware/wrap-csrf
@@ -36,4 +41,13 @@
    ["/tracks/:id"
     {:get (fn [req]
             (let [id (-> req :path-params :id Integer/parseInt)]
-              (response/ok (db/get-track {:id id}))))}]])
+              (response/ok
+               (format-track id))))}]
+   ["/comments"
+    {:post (fn [{{:keys [creator content commented_at track_id]} :body-params}]
+             (response/ok
+              (db/create-comment!
+               {:creator creator
+                :content content
+                :commented_at (c/to-sql-time (c/from-long commented_at))
+                :track_id track_id})))}]])

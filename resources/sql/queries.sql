@@ -36,3 +36,16 @@ INSERT into tracks
 (name, started_at, creator)
 values (:name, :started_at, :creator)
 RETURNING *;
+
+-- :name create-comment! :<! :1
+-- :doc creates a new comment record
+INSERT into comments
+(creator, content, commented_at, track_id)
+values (:creator, :content, :commented_at, :track_id)
+RETURNING *;
+
+-- :name get-comments-for-track :? :*
+-- :doc gets comments for a track id
+select * from comments where
+track_id = :track_id
+order by commented_at desc;

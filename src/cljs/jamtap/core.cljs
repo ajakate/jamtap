@@ -83,7 +83,7 @@
 
 (defn comment-form []
   [:div.control.has-text-centered>button.button.is-link.is-large
-   {:on-click #((rf/dispatch [:set-creator "hi"]))}
+   {:on-click #((rf/dispatch [:create-comment]))}
    "I like-a this!"])
 
 (defn creator-form []
@@ -100,7 +100,15 @@
      [:div.control>button.button.is-link
       {:on-click #((rf/dispatch [:set-creator @draft]))} "Let's go!"]]))
 
+(defn list-comments []
+  (r/with-let [comments (:comments @(rf/subscribe [:get-active-track]))]
+    [:ul
+     (for [{:keys [id creator commented_at]} comments]
+       ^{:key id}
+       [:li (str creator " said at: " commented_at)])]))
+
 ;; TODO: fix card spacing
+;; TODO: large font for the clock
 (defn show-open-track [track]
   [offset-wrapper
    (fn [offset]
@@ -116,7 +124,9 @@
       [:div.card.my-3>div.card-content
        (if-let [creator @(rf/subscribe [:creator])]
          [comment-form]
-         [creator-form])]])])
+         [creator-form])]
+      [:div.card.my-3>div.card-content
+       [list-comments]]])])
 
 (defn show-closed-track [_]
   [:div "ain't no thing"])

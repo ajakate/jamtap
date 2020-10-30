@@ -37,6 +37,11 @@
    ;; TODO: SQL QUERY RETURN JUST THE ID??
    (rfe/push-state :view-track {:id (:id track)})))
 
+(rf/reg-event-fx
+ :set-track-url-comment
+ (fn [_ [_ comment]]
+   {:dispatch [:fetch-track (:track_id comment)]}))
+
 (rf/reg-event-db
  :set-active-track
  (fn [db [_ track]]
@@ -97,10 +102,24 @@
                  :uri             "/tracks"
                  :params {:creator (get-in db [:form/new :creator])
                           :name (get-in db [:form/new :name])
-                          :started_at   (+ (:offset db) (jtime/current-time))}
+                          :started_at (+ (:offset db) (jtime/current-time))}
                  :format          (ajax/json-request-format)
                  :response-format  (ajax/json-response-format {:keywords? true})
                  :on-success       [:set-track-url]
+                 :on-failure [:set-track-url]}}))
+
+(rf/reg-event-fx
+ :create-comment
+ (fn [{:keys [db]} [_]]
+   {:http-xhrio {:method          :post
+                 :uri             "/comments"
+                 :params {:creator (:creator db)
+                          :content "Very Niiice!"
+                          :commented_at (+ (:offset db) (jtime/current-time))
+                          :track_id (get-in db [:active-track :id])}
+                 :format          (ajax/json-request-format)
+                 :response-format  (ajax/json-response-format {:keywords? true})
+                 :on-success       [:set-track-url-comment]
                  :on-failure [:set-track-url]}}))
 
 (rf/reg-event-fx
