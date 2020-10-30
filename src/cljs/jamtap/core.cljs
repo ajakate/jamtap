@@ -81,16 +81,42 @@
       (let [_ @dummy]
         [:p (jtime/format-running-time started_at offset)]))))
 
+(defn comment-form []
+  [:div.control.has-text-centered>button.button.is-link.is-large
+   {:on-click #((rf/dispatch [:set-creator "hi"]))}
+   "I like-a this!"])
+
+(defn creator-form []
+  (r/with-let [draft (r/atom nil)]
+    [:div
+     [:div.field
+      [:label.label "Let's get started..."]
+      [:label.label "What is your name?"]
+      [:div.control>input.input
+       {:type "text"
+        :placeholder "Dr. Chilly"
+        :on-change #(reset! draft (.. % -target -value))
+        :value @draft}]]
+     [:div.control>button.button.is-link
+      {:on-click #((rf/dispatch [:set-creator @draft]))} "Let's go!"]]))
+
+;; TODO: fix card spacing
 (defn show-open-track [track]
   [offset-wrapper
    (fn [offset]
-     [:div.card
-      [:div.card-header
-       [:div.card-content
-        [:p.title.is-4 (:name track)]
-        [:p.subtitle.is-6.is-italic (str "by: " (:creator track))]]]
-      [:div.card-content
-       [running-clock (:started_at track) offset]]])])
+     [:div
+      [:div.card.my-3
+       [:div.card-header
+        [:div.card-content
+         [:p.title.is-4 (:name track)]
+         [:p.subtitle.is-6.is-italic (str "by: " (:creator track))]]]
+       [:div.card-content.has-text-centered.has-text-weight-semibold.pb-4
+        [:p "Elapsed Time:"]
+        [running-clock (:started_at track) offset]]]
+      [:div.card.my-3>div.card-content
+       (if-let [creator @(rf/subscribe [:creator])]
+         [comment-form]
+         [creator-form])]])])
 
 (defn show-closed-track [_]
   [:div "ain't no thing"])
@@ -109,24 +135,23 @@
       [:div
        [:div.field
         [:label.label "What shall we call your jam sesh?"]
-        [:div.control
-         [:input.input {:type "text"
-                        :placeholder "Joe's basement hang 4/20/19"
-                        :on-change #(swap! draft assoc :name (.. % -target -value))
-                        :value (:name @draft)}]]]
+        [:div.control>input.input
+         {:type "text"
+          :placeholder "Joe's basement hang 4/20/19"
+          :on-change #(swap! draft assoc :name (.. % -target -value))
+          :value (:name @draft)}]]
        [:div.field
         [:label.label "What's YOUR name?"]
-        [:div.control
-         [:input.input {:type "text"
-                        :placeholder "Alan"
-                        :on-change #(swap! draft assoc :creator (.. % -target -value))
-                        :value (:creator @draft)}]]]
-       [:div.control
-        [:button.button.is-link
-         {:on-click #((do
-                        (rf/dispatch [:set-new-fields @draft])
-                        (rf/dispatch [:set-show-form false])
-                        (rf/dispatch [:sync-clock])))} "Continue"]]])
+        [:div.control>input.input
+         {:type "text"
+          :placeholder "Alan"
+          :on-change #(swap! draft assoc :creator (.. % -target -value))
+          :value (:creator @draft)}]]
+       [:div.control>button.button.is-link
+        {:on-click #((do
+                       (rf/dispatch [:set-new-fields @draft])
+                       (rf/dispatch [:set-show-form false])
+                       (rf/dispatch [:sync-clock])))} "Continue"]])
     [start-page]))
 
 (defn page []

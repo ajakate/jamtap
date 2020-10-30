@@ -53,9 +53,16 @@
    (assoc db :res res)))
 
 (rf/reg-event-db
+ :set-creator
+ (fn [db [_ creator]]
+   (assoc db :creator creator)))
+
+(rf/reg-event-db
  :set-new-fields
  (fn [db [_ fields]]
-   (assoc db :form/new fields)))
+   (assoc db
+          :form/new fields
+          :creator (:creator fields))))
 
 (rf/reg-event-db
  :set-offset
@@ -118,6 +125,11 @@
  :offset
  (fn [db _]
    (-> db :offset)))
+
+(rf/reg-sub
+ :creator
+ (fn [db _]
+   (-> db :creator)))
 
 (rf/reg-sub
  :track-loading
