@@ -43,6 +43,13 @@
    [:div.has-text-centered.has-text-weight-semibold.pb-4 msg]
    [:progress.progress.is-large.is-primary]])
 
+(defn offset-wrapper [inner]
+  (if-let [offset @(rf/subscribe [:offset])]
+    [inner offset]
+    (do
+      (rf/dispatch [:sync-clock])
+      [loading-bar "Loading sum crunchny syncs..."])))
+
 (defn about-page []
   [:img {:src "/img/warning_clojure.png"}])
 
@@ -55,23 +62,27 @@
     [:div "getting tracks where active is" active]))
 
 (defn start-page []
-  (if-let [offset @(rf/subscribe [:offset])]
-    [:div.card.has-text-centered
-     [:div.card-content "Click below when you're jam starts"]
-     [:div.card-content>button.button.is-link
-      {:on-click #(rf/dispatch [:create-track])}
-      "Start!"]]
-    [loading-bar "Loading sum crunchny syncs..."]))
+  [offset-wrapper
+   (fn [_]
+     [:div.card.has-text-centered
+      [:div.card-content "Click below when you're jam starts"]
+      [:div.card-content>button.button.is-link
+       {:on-click #(rf/dispatch [:create-track])}
+       "Start!"]])])
 
 (defn show-open-track [track]
-  (let [offset @(rf/subscribe [:offset])]
-    [:div.card
-     [:div.card-header
+  [offset-wrapper
+   (fn [offset]
+     [:div.card
+      [:div.card-header
+       [:div.card-content
+        [:p.title.is-4 (:name track)]
+        [:p.subtitle.is-6.is-italic (str "by: " (:creator track))]]]
       [:div.card-content
-       [:p.title.is-4 (:name track)]
-       [:p.subtitle.is-6.is-italic (str "by: " (:creator track))]]]
-     [:div.card-content
-      [:p (jtime/format-running-time (:started_at track) offset)]]]))
+       [:p (jtime/format-running-time (:started_at track) offset)]]])])
+
+(defn show-closed-track [_]
+  [:div "ain't no thing"])
 
 (defn view-track []
   (if-let [loading @(rf/subscribe [:track-loading])]
