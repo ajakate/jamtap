@@ -82,9 +82,14 @@
         [:p (jtime/format-running-time started_at offset)]))))
 
 (defn comment-form []
-  [:div.control.has-text-centered>button.button.is-link.is-large
-   {:on-click #((rf/dispatch [:create-comment]))}
-   "I like-a this!"])
+  [:div.buttons.columns
+   [:button.button.is-primary.is-large.column
+    {:on-click #((rf/dispatch [:create-comment]))}
+    "I like-a this!"]
+   ;; TODO: conditionally show
+   [:button.button.is-danger.is-large.column
+    {:on-click #((rf/dispatch [:finish-track]))}
+    "I'm done, kill this sesh!!"]])
 
 (defn creator-form []
   (r/with-let [draft (r/atom nil)]
@@ -104,9 +109,10 @@
 (defn list-comments []
   (r/with-let [comments (:comments @(rf/subscribe [:get-active-track]))]
     [:ul
-     (for [{:keys [id creator commented_at running_time]} comments]
+     (for [{:keys [id creator content commented_at running_time]} comments]
        ^{:key id}
-       [:div.card.my-3>div.card-content (str creator " said at: " (jtime/format-millis running_time))])]))
+       [:div.card.my-3>div.card-content
+        (str creator " said \"" content "\" at: " (jtime/format-millis running_time))])]))
 
 ;; TODO: fix card spacing
 (defn show-open-track [track]
@@ -159,6 +165,7 @@
           :value (:creator @draft)}]]
        [:div.control>button.button.is-link
         {:on-click #((do
+                       ;; TODO: this seems bad
                        (rf/dispatch [:set-new-fields @draft])
                        (rf/dispatch [:set-show-form false])
                        (rf/dispatch [:sync-clock])))} "Continue"]])

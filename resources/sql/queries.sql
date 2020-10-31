@@ -37,6 +37,13 @@ INSERT into tracks
 values (:name, :started_at, :creator)
 RETURNING *;
 
+-- :name finish-track! :<! :1
+-- :doc finishes a track
+UPDATE tracks
+set finished_at = :finished_at
+where id = :id
+RETURNING *;
+
 -- :name create-comment! :<! :1
 -- :doc creates a new comment record
 INSERT into comments

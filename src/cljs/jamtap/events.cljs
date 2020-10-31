@@ -42,6 +42,12 @@
  (fn [_ [_ comment]]
    {:dispatch [:fetch-track (:track_id comment)]}))
 
+;; TODO: many methods for this
+(rf/reg-event-fx
+ :update-track
+ (fn [_ [_ track]]
+   {:dispatch [:fetch-track (:id track)]}))
+
 (rf/reg-event-db
  :set-active-track
  (fn [db [_ track]]
@@ -107,6 +113,17 @@
                  :format          (ajax/json-request-format)
                  :response-format  (ajax/json-response-format {:keywords? true})
                  :on-success       [:set-track-url]
+                 :on-failure [:set-track-url]}}))
+
+(rf/reg-event-fx
+ :finish-track
+ (fn [{:keys [db]} [_]]
+   {:http-xhrio {:method          :post
+                 :uri             (str "/tracks/" (get-in db [:active-track :id]))
+                 :params {:finished_at (+ (:offset db) (jtime/current-time))}
+                 :format          (ajax/json-request-format)
+                 :response-format  (ajax/json-response-format {:keywords? true})
+                 :on-success       [:update-track]
                  :on-failure [:set-track-url]}}))
 
 (rf/reg-event-fx
