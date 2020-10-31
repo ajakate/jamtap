@@ -109,7 +109,6 @@
        [:li (str creator " said at: " commented_at)])]))
 
 ;; TODO: fix card spacing
-;; TODO: large font for the clock
 (defn show-open-track [track]
   [offset-wrapper
    (fn [offset]
@@ -121,7 +120,7 @@
          [:p.subtitle.is-6.is-italic (str "by: " (:creator track))]]]
        [:div.card-content.has-text-centered.has-text-weight-semibold.pb-4
         [:p "Elapsed Time:"]
-        [running-clock (:started_at track) offset]]]
+        [:div.is-size-1 [running-clock (:started_at track) offset]]]]
       [:div.card.my-3>div.card-content
        (if-let [creator @(rf/subscribe [:creator])]
          [comment-form]
