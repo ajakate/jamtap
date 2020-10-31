@@ -107,7 +107,10 @@
 
 ;; TODO: fix this comments next bit
 (defn list-comments []
-  (r/with-let [comments (:comments @(rf/subscribe [:get-active-track]))]
+  (r/with-let [track @(rf/subscribe [:get-active-track])
+               raw_comments (:comments track)
+               to_reverse (not= nil (:finished_at track))
+               comments (if to_reverse (reverse raw_comments) raw_comments)]
     [:ul
      (for [{:keys [id creator content commented_at running_time]} comments]
        ^{:key id}
@@ -134,8 +137,15 @@
       [:div.card.my-3>div.card-content
        [list-comments]]])])
 
-(defn show-closed-track [_]
-  [:div "ain't no thing"])
+(defn show-closed-track [track]
+  [:div
+   [:div.card.my-3
+    [:div.card-header
+     [:div.card-content
+      [:p.title.is-4 (:name track)]
+      [:p.subtitle.is-6.is-italic (str "by: " (:creator track))]]]]
+   [:div.card.my-3>div.card-content
+    [list-comments]]])
 
 (defn view-track []
   (if-let [loading @(rf/subscribe [:track-loading])]
