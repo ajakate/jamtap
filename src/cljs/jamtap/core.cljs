@@ -104,9 +104,9 @@
 (defn list-comments []
   (r/with-let [comments (:comments @(rf/subscribe [:get-active-track]))]
     [:ul
-     (for [{:keys [id creator commented_at]} comments]
+     (for [{:keys [id creator commented_at running_time]} comments]
        ^{:key id}
-       [:div.card.my-3>div.card-content (str creator " said at: " commented_at)])]))
+       [:div.card.my-3>div.card-content (str creator " said at: " (jtime/format-millis running_time))])]))
 
 ;; TODO: fix card spacing
 (defn show-open-track [track]

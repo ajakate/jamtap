@@ -51,11 +51,16 @@
     (str hours ":" time-string)
     time-string))
 
-(defn format-running-time [server-time offset]
-  (let [start-millis (- (c/to-long server-time) offset)
-        running (-> (current-time) (- start-millis) (/ 1000) int)
-        full_minutes (quot running 60)
-        seconds (format-leading-zero (mod running 60))
+(defn format-millis [millis]
+  (let [
+        full_seconds (int (/ millis 1000))
+        full_minutes (quot full_seconds 60)
+        seconds (format-leading-zero (mod full_seconds 60))
         hours (quot full_minutes 60)
         minutes (format-leading-zero (mod full_minutes 60))]
     (append-hours hours (str minutes ":" seconds))))
+
+(defn format-running-time [server-time offset]
+  (let [start-millis (- (c/to-long server-time) offset)
+        running (- (current-time) start-millis)]
+    (format-millis running)))
