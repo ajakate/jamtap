@@ -7,7 +7,8 @@
     [clojure.tools.logging :as log]
     [conman.core :as conman]
     [jamtap.config :refer [env]]
-    [mount.core :refer [defstate]])
+    [mount.core :refer [defstate]]
+    [java-time :refer [java-date]])
   (:import (org.postgresql.util PGobject)))
 
 (defstate ^:dynamic *db*
@@ -32,9 +33,9 @@
 (extend-protocol next.jdbc.result-set/ReadableColumn
   java.sql.Timestamp
   (read-column-by-label [^java.sql.Timestamp v _]
-    (.toLocalDateTime v))
+    (java-date (.atZone (.toLocalDateTime v) (java.time.ZoneId/systemDefault))))
   (read-column-by-index [^java.sql.Timestamp v _2 _3]
-    (.toLocalDateTime v))
+    (java-date (.atZone (.toLocalDateTime v) (java.time.ZoneId/systemDefault))))
   java.sql.Date
   (read-column-by-label [^java.sql.Date v _]
     (.toLocalDate v))

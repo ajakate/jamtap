@@ -106,7 +106,7 @@
     [:ul
      (for [{:keys [id creator commented_at]} comments]
        ^{:key id}
-       [:li (str creator " said at: " commented_at)])]))
+       [:div.card.my-3>div.card-content (str creator " said at: " commented_at)])]))
 
 ;; TODO: fix card spacing
 (defn show-open-track [track]

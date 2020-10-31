@@ -14,10 +14,22 @@
 (defn home-page [request]
   (layout/render request "home.html"))
 
+(defn format-comments [id track_started]
+  (let [comments (db/get-comments-for-track {:track_id id})]
+    (map
+     (fn [comment]
+       (assoc comment
+              :running_time
+              (- (.getTime (:commented_at comment))
+                 (.getTime track_started))))
+     comments)))
+
 (defn format-track [id]
-  (merge
-   (db/get-track {:id id})
-   {:comments (db/get-comments-for-track {:track_id id})}))
+  (let [track (db/get-track {:id id})]
+    (assoc
+     track
+     :comments
+     (format-comments id (:started_at track)))))
 
 (defn home-routes []
   [""
