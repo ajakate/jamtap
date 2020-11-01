@@ -42,8 +42,10 @@
    ["/time" {:get (fn [_]
                     {:body {:server_time (System/currentTimeMillis)}})}]
    ["/tracks"
-    {:get (fn [_]
-            (response/ok (db/get-active-tracks)))
+    {:get (fn [{{:keys [active]} :params}]
+            (if (read-string active)
+              (response/ok (db/get-active-tracks))
+              (response/ok (db/get-old-tracks))))
      :post (fn [{{:keys [creator name started_at]} :body-params}]
              (response/ok
               (db/create-track!

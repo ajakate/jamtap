@@ -58,8 +58,19 @@
     [:div {:dangerouslySetInnerHTML {:__html (md->html docs)}}]))
 
 (defn list-tracks []
-  (let [active (:active @(rf/subscribe [:common/query-params]))]
-    [:div "getting tracks where active is" active]))
+  (let [tracks-type @(rf/subscribe [:get-tracks-type])
+        tracks @(rf/subscribe [:get-tracks])]
+    [:div
+     (for [{:keys [id creator name started_at]} tracks]
+       ^{:key id}
+       [:div.card.my-3>div.card-content>div.columns.is-vcentered
+        [:div.column
+         [:p.title.is-5 name]
+         [:p.subtitle.is-6.is-italic creator]
+         [:time (.toLocaleString started_at)]]
+        [:div.column [:button.button.is-link.is-pulled-right
+                      {:on-click #(rf/dispatch [:set-track-url {:id id}])}
+                      "Join"]]])]))
 
 (defn start-page []
   [offset-wrapper
@@ -195,12 +206,14 @@
   (reitit/router
    [["/" {:name        :home
           :view        home-page
-          :controllers [{:start (fn [_] (rf/dispatch [:page/init-home]))}]}]
+          :controllers [{:start (fn [_]
+                                  (rf/dispatch [:page/init-home]))}]}]
     ["/about" {:name :about
                :view about-page}]
     ["/tracks/new" {:name :new-track
                     :view new-track
-                    :controllers [{:start (fn [_] (rf/dispatch [:set-show-form true]))}]}]
+                    :controllers [{:start (fn [_]
+                                            (rf/dispatch [:set-show-form true]))}]}]
     ["/tracks/:id" {:name :view-track
                     :view view-track
                     :controllers [{:parameters {:path [:id]}
@@ -208,7 +221,10 @@
                                             (rf/dispatch [:set-track-loading true])
                                             (rf/dispatch [:fetch-track id]))}]}]
     ["/tracks" {:name :list-tracks
-                :view list-tracks}]]
+                :view list-tracks
+                :controllers [{:parameters {:query [:active]}
+                               :start (fn [{{:keys [active]} :query}]
+                                        (rf/dispatch [:fetch-tracks active]))}]}]]
    {:conflicts nil}))
 
 (defn start-router! []

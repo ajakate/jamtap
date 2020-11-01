@@ -4,7 +4,8 @@
    [ajax.core :as ajax]
    [reitit.frontend.easy :as rfe]
    [reitit.frontend.controllers :as rfc]
-   [jamtap.time :as jtime]))
+   [jamtap.time :as jtime]
+   [cljs.reader :as reader]))
 
 ;;dispatchers
 
@@ -76,6 +77,15 @@
           :creator (:creator fields))))
 
 (rf/reg-event-db
+ :set-tracks
+ (fn [db [_ active tracks]]
+   (assoc db 
+          :tracks tracks
+          :tracks-type (if (reader/read-string active)
+                         :active
+                         :old))))
+
+(rf/reg-event-db
  :set-offset
  (fn [db [_ fields]]
    (assoc db :offset fields)))
@@ -85,7 +95,7 @@
  (fn [db [_ show-form]]
    (assoc db :show-form show-form)))
 
-;; TODO: handle 401
+;; TODO: handle 401/404
 (rf/reg-event-fx
  :fetch-track
  (fn [_ [_ id]]
@@ -93,6 +103,15 @@
                  :uri             (str "/tracks/" id)
                  :response-format (ajax/json-response-format {:keywords? true})
                  :on-success       [:set-active-track]}}))
+
+(rf/reg-event-fx
+ :fetch-tracks
+ (fn [_ [_ active]]
+   {:http-xhrio {:method          :get
+                 :uri             "/tracks"
+                 :params {:active active}
+                 :response-format (ajax/json-response-format {:keywords? true})
+                 :on-success      [:set-tracks active]}}))
 
 (rf/reg-event-fx
  :fetch-docs
@@ -161,6 +180,17 @@
  :offset
  (fn [db _]
    (-> db :offset)))
+
+;; TODO: get or no get?
+(rf/reg-sub
+ :get-tracks
+ (fn [db _]
+   (-> db :tracks)))
+
+(rf/reg-sub
+ :get-tracks-type
+ (fn [db _]
+   (-> db :tracks-type)))
 
 (rf/reg-sub
  :creator
