@@ -57,20 +57,41 @@
   (when-let [docs @(rf/subscribe [:docs])]
     [:div {:dangerouslySetInnerHTML {:__html (md->html docs)}}]))
 
+(def list-vars
+  {:active
+   {:title "Showing currently active tracks..."
+    :top-button-name "View Old Tracks"
+    :top-button-func #(rfe/push-state :list-tracks {} {:active false})
+    :view-track-button "Join"}
+   :old
+   {:title "Showing old finished tracks..."
+    :top-button-name "View Active Tracks"
+    :top-button-func #(rfe/push-state :list-tracks {} {:active true})
+    :view-track-button "View"}})
+
 (defn list-tracks []
   (let [tracks-type @(rf/subscribe [:get-tracks-type])
-        tracks @(rf/subscribe [:get-tracks])]
+        tracks @(rf/subscribe [:get-tracks])
+        vars (get list-vars tracks-type)]
     [:div
+     [:div.buttons
+      [:button.button.is-primary
+       {:on-click #(rfe/push-state :new-track)}
+       "Create Track"]
+      [:button.button.is-info
+       {:on-click (:top-button-func vars)}
+       (:top-button-name vars)]]
+     [:p.title.is-4 (:title vars)]
      (for [{:keys [id creator name started_at]} tracks]
        ^{:key id}
-       [:div.card.my-3>div.card-content>div.columns.is-vcentered
+       [:div.card.my-3>div.card-content>div.columns.buttons
         [:div.column
          [:p.title.is-5 name]
          [:p.subtitle.is-6.is-italic creator]
          [:time (.toLocaleString started_at)]]
         [:div.column [:button.button.is-link.is-pulled-right
                       {:on-click #(rf/dispatch [:set-track-url {:id id}])}
-                      "Join"]]])]))
+                      (:view-track-button vars)]]])]))
 
 (defn start-page []
   [offset-wrapper
@@ -129,6 +150,7 @@
         (str creator " said \"" content "\" at: " (jtime/format-millis running_time))])]))
 
 ;; TODO: fix card spacing
+;; TODO: refactor comments together
 (defn show-open-track [track]
   [offset-wrapper
    (fn [offset]
@@ -207,7 +229,8 @@
    [["/" {:name        :home
           :view        home-page
           :controllers [{:start (fn [_]
-                                  (rf/dispatch [:page/init-home]))}]}]
+                                  (rf/dispatch [:page/init-home])
+                                  (rfe/push-state :list-tracks {} {:active true}))}]}]
     ["/about" {:name :about
                :view about-page}]
     ["/tracks/new" {:name :new-track
