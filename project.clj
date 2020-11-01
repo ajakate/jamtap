@@ -60,7 +60,8 @@
              :aot :all
              :uberjar-name "jamtap.jar"
              :source-paths ["env/prod/clj" "env/prod/cljs"]
-             :resource-paths ["env/prod/resources"]}
+             :resource-paths ["env/prod/resources"]
+             :prep-tasks ["compile" ["run" "-m" "shadow.cljs.devtools.cli" "release" "app"]]}
 
    :dev           [:project/dev :profiles/dev]
    :test          [:project/dev :project/test :profiles/test]
