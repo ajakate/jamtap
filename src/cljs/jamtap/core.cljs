@@ -25,7 +25,7 @@
   (r/with-let [expanded? (r/atom false)]
     [:nav.navbar.is-info>div.container
      [:div.navbar-brand
-      [:a.navbar-item {:href "/" :style {:font-weight :bold}} "jamtap"]
+      [:a.navbar-item {:href "/" :style {:font-weight :bold}} "Jamtap"]
       [:span.navbar-burger.burger
        {:data-target :nav-menu
         :on-click #(swap! expanded? not)
@@ -34,9 +34,9 @@
      [:div#nav-menu.navbar-menu
       {:class (when @expanded? :is-active)}
       [:div.navbar-start
-       [nav-link "#/tracks/new" "Create Track" :about]
-       [nav-link "/#/tracks?active=true" "Join Track" :about]
-       [nav-link "/#/tracks?active=false" "Find Old Track" :about]]]]))
+       [nav-link "#/tracks/new" "Create Track" :new-track]
+       [nav-link "/#/tracks?active=true" "Join Track" :list-tracks]
+       [nav-link "/#/tracks?active=false" "Find Old Track" :list-tracks]]]]))
 
 (defn loading-bar [msg]
   [:div
@@ -49,9 +49,6 @@
     (do
       (rf/dispatch [:sync-clock])
       [loading-bar "Loading sum crunchny syncs..."])))
-
-(defn about-page []
-  [:img {:src "/img/warning_clojure.png"}])
 
 (defn home-page []
   [:div])
@@ -226,8 +223,6 @@
           :view        home-page
           :controllers [{:start (fn [_]
                                   (rfe/push-state :list-tracks {} {:active true}))}]}]
-    ["/about" {:name :about
-               :view about-page}]
     ["/tracks/new" {:name :new-track
                     :view new-track
                     :controllers [{:start (fn [_]
