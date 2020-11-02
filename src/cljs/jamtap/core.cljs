@@ -8,6 +8,8 @@
    [jamtap.events]
    [jamtap.time :as jtime]
    [reitit.core :as reitit]
+   [cljs-time.format :as fo]
+   [cljs-time.core :as co]
    [reitit.frontend.easy :as rfe])
   (:import goog.History))
 
@@ -61,6 +63,15 @@
     :top-button-func #(rfe/push-state :list-tracks {} {:active true})
     :view-track-button "View"}})
 
+(defn format-timestamp [time]
+  (let [parsed (fo/parse time)
+        year (co/year parsed)
+        month (co/month parsed)
+        day (co/day parsed)
+        hour (co/hour parsed)
+        minute (co/minute parsed)]
+    (str month "/" day "/" year " at: " (jtime/format-daytime hour minute))))
+
 (defn list-tracks []
   (let [tracks-type @(rf/subscribe [:get-tracks-type])
         tracks @(rf/subscribe [:get-tracks])
@@ -80,7 +91,7 @@
         [:div.column
          [:p.title.is-5 name]
          [:p.subtitle.is-6.is-italic creator]
-         [:time (.toLocaleString started_at)]]
+         [:time (format-timestamp started_at)]]
         [:div.column
          (if (= :old tracks-type)
            [:button.button.is-danger.is-pulled-right.mx-3

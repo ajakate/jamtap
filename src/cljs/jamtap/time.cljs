@@ -51,9 +51,13 @@
     (str hours ":" time-string)
     time-string))
 
+(defn format-daytime [hour minute]
+  (let [full-minutes (format-leading-zero minute)
+        m (if (< 11 hour) "pm" "am")]
+    (str (-> hour (+ 11) (mod 12) (+ 1)) ":" full-minutes m)))
+
 (defn format-millis [millis]
-  (let [
-        full_seconds (int (/ millis 1000))
+  (let [full_seconds (int (/ millis 1000))
         full_minutes (quot full_seconds 60)
         seconds (format-leading-zero (mod full_seconds 60))
         hours (quot full_minutes 60)
