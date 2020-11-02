@@ -26,6 +26,7 @@
                  [org.clojure/clojure "1.10.1"]
                  [org.clojure/tools.cli "1.0.194"]
                  [org.clojure/tools.logging "1.1.0"]
+                 [org.clojure/java.jdbc "0.7.11"]
                  [org.postgresql/postgresql "42.2.14"]
                  [org.webjars.npm/bulma "0.9.0"]
                  [org.webjars.npm/material-icons "0.3.1"]

@@ -1,0 +1,8 @@
+{
+    "name": "Jamtap",
+    "description": "App to use jamtap",
+    "image": "heroku/clojure",
+    "addons": [
+        "heroku-postgresql"
+    ]
+}
