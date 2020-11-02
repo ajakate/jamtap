@@ -54,8 +54,7 @@
   [:img {:src "/img/warning_clojure.png"}])
 
 (defn home-page []
-  (when-let [docs @(rf/subscribe [:docs])]
-    [:div {:dangerouslySetInnerHTML {:__html (md->html docs)}}]))
+  [:div])
 
 (def list-vars
   {:active
@@ -97,7 +96,7 @@
   [offset-wrapper
    (fn [_]
      [:div.card.has-text-centered
-      [:div.card-content "Click below when you're jam starts"]
+      [:div.card-content "Click below at the same time as you start your jam recording"]
       [:div.card-content>button.button.is-link
        {:on-click #(rf/dispatch [:create-track])}
        "Start!"]])])
@@ -116,11 +115,10 @@
 (defn comment-form []
   [:div.buttons.columns
    [:button.button.is-primary.is-large.column
-    {:on-click #((rf/dispatch [:create-comment]))}
+    {:on-click #(rf/dispatch [:create-comment])}
     "I like-a this!"]
-   ;; TODO: conditionally show
    [:button.button.is-danger.is-large.column
-    {:on-click #((rf/dispatch [:finish-track]))}
+    {:on-click #(rf/dispatch [:finish-track])}
     "I'm done, kill this sesh!!"]])
 
 (defn creator-form []
@@ -135,7 +133,7 @@
         :on-change #(reset! draft (.. % -target -value))
         :value @draft}]]
      [:div.control>button.button.is-link
-      {:on-click #((rf/dispatch [:set-creator @draft]))} "Let's go!"]]))
+      {:on-click #(rf/dispatch [:set-creator @draft])} "Let's go!"]]))
 
 ;; TODO: fix this comments next bit
 (defn list-comments []
@@ -189,7 +187,7 @@
         [show-closed-track track]))))
 
 (defn new-track []
-  (if @(rf/subscribe [:show-form])
+  (if (= nil @(rf/subscribe [:form/new]))
     (r/with-let [draft (r/atom {})]
       [:div
        [:div.field
@@ -207,11 +205,7 @@
           :on-change #(swap! draft assoc :creator (.. % -target -value))
           :value (:creator @draft)}]]
        [:div.control>button.button.is-link
-        {:on-click #((do
-                       ;; TODO: this seems bad
-                       (rf/dispatch [:set-new-fields @draft])
-                       (rf/dispatch [:set-show-form false])
-                       (rf/dispatch [:sync-clock])))} "Continue"]])
+        {:on-click #(rf/dispatch [:set-new-fields @draft])} "Continue"]])
     [start-page]))
 
 (defn page []
@@ -229,14 +223,13 @@
    [["/" {:name        :home
           :view        home-page
           :controllers [{:start (fn [_]
-                                  (rf/dispatch [:page/init-home])
                                   (rfe/push-state :list-tracks {} {:active true}))}]}]
     ["/about" {:name :about
                :view about-page}]
     ["/tracks/new" {:name :new-track
                     :view new-track
                     :controllers [{:start (fn [_]
-                                            (rf/dispatch [:set-show-form true]))}]}]
+                                            (rf/dispatch [:set-new-fields nil]))}]}]
     ["/tracks/:id" {:name :view-track
                     :view view-track
                     :controllers [{:parameters {:path [:id]}

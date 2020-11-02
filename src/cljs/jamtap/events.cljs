@@ -27,11 +27,6 @@
  (fn [_ [_ url-key params query]]
    {:common/navigate-fx! [url-key params query]}))
 
-(rf/reg-event-db
- :set-docs
- (fn [db [_ docs]]
-   (assoc db :docs docs)))
-
 (rf/reg-event-fx
  :set-track-url
  (fn [_ [_ track]]
@@ -90,11 +85,6 @@
  (fn [db [_ fields]]
    (assoc db :offset fields)))
 
-(rf/reg-event-db
- :set-show-form
- (fn [db [_ show-form]]
-   (assoc db :show-form show-form)))
-
 ;; TODO: handle 401/404
 (rf/reg-event-fx
  :fetch-track
@@ -112,14 +102,6 @@
                  :params {:active active}
                  :response-format (ajax/json-response-format {:keywords? true})
                  :on-success      [:set-tracks active]}}))
-
-(rf/reg-event-fx
- :fetch-docs
- (fn [_ _]
-   {:http-xhrio {:method          :get
-                 :uri             "/docs"
-                 :response-format (ajax/raw-response-format)
-                 :on-success       [:set-docs]}}))
 
 (rf/reg-event-fx
  :create-track
@@ -169,17 +151,17 @@
  (fn [db [_ error]]
    (assoc db :common/error error)))
 
-(rf/reg-event-fx
- :page/init-home
- (fn [_ _]
-   {:dispatch [:fetch-docs]}))
-
 ;;subscriptions
 
 (rf/reg-sub
  :offset
  (fn [db _]
    (-> db :offset)))
+
+(rf/reg-sub
+ :form/new
+ (fn [db _]
+   (-> db :form/new)))
 
 ;; TODO: get or no get?
 (rf/reg-sub
@@ -206,11 +188,6 @@
  :get-active-track
  (fn [db _]
    (-> db :active-track)))
-
-(rf/reg-sub
- :show-form
- (fn [db _]
-   (-> db :show-form)))
 
 (rf/reg-sub
  :common/route
@@ -240,11 +217,6 @@
  :<- [:common/route]
  (fn [route _]
    (-> route :path-params)))
-
-(rf/reg-sub
- :docs
- (fn [db _]
-   (:docs db)))
 
 (rf/reg-sub
  :common/error
