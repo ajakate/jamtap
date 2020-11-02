@@ -140,7 +140,6 @@
      [:div.control>button.button.is-link
       {:on-click #(rf/dispatch [:set-creator @draft])} "Let's go!"]]))
 
-;; TODO: fix this comments next bit
 (defn list-comments []
   (r/with-let [track @(rf/subscribe [:get-active-track])
                raw_comments (:comments track)
@@ -152,17 +151,18 @@
        [:div.card.my-3>div.card-content
         (str creator " said \"" content "\" at: " (jtime/format-millis running_time))])]))
 
-;; TODO: fix card spacing
-;; TODO: refactor comments together
+(defn track-title [name creator]
+  [:div.card-header
+   [:div.card-content
+    [:p.title.is-4 name]
+    [:p.subtitle.is-6.is-italic (str "by: " creator)]]])
+
 (defn show-open-track [track]
   [offset-wrapper
    (fn [offset]
      [:div
       [:div.card.my-3
-       [:div.card-header
-        [:div.card-content
-         [:p.title.is-4 (:name track)]
-         [:p.subtitle.is-6.is-italic (str "by: " (:creator track))]]]
+       [track-title (:name track) (:creator track)]
        [:div.card-content.has-text-centered.has-text-weight-semibold.pb-4
         [:p "Elapsed Time:"]
         [:div.is-size-1 [running-clock (:started_at track) offset]]]]
@@ -176,10 +176,7 @@
 (defn show-closed-track [track]
   [:div
    [:div.card.my-3
-    [:div.card-header
-     [:div.card-content
-      [:p.title.is-4 (:name track)]
-      [:p.subtitle.is-6.is-italic (str "by: " (:creator track))]]]]
+    [track-title (:name track) (:creator track)]]
    [:div.card.my-3>div.card-content
     [list-comments]]])
 

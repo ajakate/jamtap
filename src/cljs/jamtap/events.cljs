@@ -30,7 +30,6 @@
 (rf/reg-event-fx
  :set-track-url
  (fn [_ [_ track]]
-   ;; TODO: SQL QUERY RETURN JUST THE ID??
    (rfe/push-state :view-track {:id (:id track)})))
 
 (rf/reg-event-fx
@@ -53,11 +52,6 @@
  :set-track-loading
  (fn [db [_ loading]]
    (assoc db :track-loading loading)))
-
-(rf/reg-event-db
- :set-response
- (fn [db [_ res]]
-   (assoc db :res res)))
 
 (rf/reg-event-db
  :set-creator

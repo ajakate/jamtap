@@ -41,8 +41,6 @@
                  [reagent "0.10.0"]
                  [clj-time "0.15.2"]
                  [com.andrewmcveigh/cljs-time "0.5.2"]
-                 
-                 ; TODO: not sure what these do
                  [day8.re-frame/http-fx "0.1.6"]
                  [org.clojure/google-closure-library "0.0-20191016-6ae1f72f" :scope "provided"]]
 
