@@ -3,4 +3,4 @@ CREATE TABLE comments
 creator VARCHAR(100),
 content VARCHAR(100),
 commented_at TIMESTAMP,
-track_id INT references tracks(id));
+track_id INT references tracks(id) on delete cascade);

@@ -45,6 +45,11 @@ INSERT into tracks
 values (:name, :started_at, :creator)
 RETURNING *;
 
+-- :name delete-track! :<! :1
+-- :doc deletes a track record
+DELETE FROM tracks t
+WHERE t.id = :id;
+
 -- :name finish-track! :<! :1
 -- :doc finishes a track
 UPDATE tracks

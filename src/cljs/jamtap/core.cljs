@@ -88,9 +88,14 @@
          [:p.title.is-5 name]
          [:p.subtitle.is-6.is-italic creator]
          [:time (.toLocaleString started_at)]]
-        [:div.column [:button.button.is-link.is-pulled-right
-                      {:on-click #(rf/dispatch [:set-track-url {:id id}])}
-                      (:view-track-button vars)]]])]))
+        [:div.column
+         (if (= :old tracks-type)
+           [:button.button.is-danger.is-pulled-right.mx-3
+            {:on-click #(rf/dispatch [:delete-track id])}
+            "Delete"])
+         [:button.button.is-link.is-pulled-right.mx-3
+          {:on-click #(rf/dispatch [:set-track-url {:id id}])}
+          (:view-track-button vars)]]])]))
 
 (defn start-page []
   [offset-wrapper

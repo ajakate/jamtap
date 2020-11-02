@@ -60,7 +60,10 @@
                (response/ok
                 (db/finish-track!
                  {:id id
-                  :finished_at (c/to-sql-time (c/from-long finished_at))}))))}]
+                  :finished_at (c/to-sql-time (c/from-long finished_at))}))))
+     :delete (fn [req]
+               (let [id (Integer/parseInt (get-in req [:path-params :id]))]
+                 (response/ok (db/delete-track! {:id id}))))}]
    ["/comments"
     {:post (fn [{{:keys [creator content commented_at track_id]} :body-params}]
              (response/ok

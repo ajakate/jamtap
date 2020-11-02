@@ -117,6 +117,16 @@
                  :on-failure [:set-track-url]}}))
 
 (rf/reg-event-fx
+ :delete-track
+ (fn [{:keys [db]} [_ id]]
+   {:http-xhrio {:method          :delete
+                 :uri             (str "/tracks/" id)
+                 :format          (ajax/json-request-format)
+                 :response-format  (ajax/json-response-format {:keywords? true})
+                 :on-success       [:fetch-tracks false]
+                 :on-failure [:fetch-tracks false]}}))
+
+(rf/reg-event-fx
  :finish-track
  (fn [{:keys [db]} [_]]
    {:http-xhrio {:method          :post
