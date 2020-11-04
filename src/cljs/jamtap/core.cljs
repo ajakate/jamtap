@@ -122,13 +122,9 @@
         [:p (jtime/format-running-time started_at offset)]))))
 
 (defn comment-form []
-  [:div.buttons.columns
-   [:button.button.is-primary.is-large.column
-    {:on-click #(rf/dispatch [:create-comment])}
-    "I like-a this!"]
-   [:button.button.is-danger.is-large.column
-    {:on-click #(rf/dispatch [:finish-track])}
-    "I'm done, kill this sesh!!"]])
+  [:div.buttons.columns>button.button.is-primary.is-large.column
+   {:on-click #(rf/dispatch [:create-comment])}
+   "I like-a this!"])
 
 (defn creator-form []
   (r/with-let [draft (r/atom nil)]
@@ -164,18 +160,23 @@
 (defn show-open-track [track]
   [offset-wrapper
    (fn [offset]
-     [:div
-      [:div.card.my-3
-       [track-title (:name track) (:creator track)]
-       [:div.card-content.has-text-centered.has-text-weight-semibold.pb-4
-        [:p "Elapsed Time:"]
-        [:div.is-size-1 [running-clock (:started_at track) offset]]]]
-      [:div.card.my-3>div.card-content
-       (if-let [creator @(rf/subscribe [:creator])]
-         [comment-form]
-         [creator-form])]
-      [:div.card.my-3>div.card-content
-       [list-comments]]])])
+     (let [creator @(rf/subscribe [:creator])]
+       [:div
+        [:div.card.my-3
+         [track-title (:name track) (:creator track)]
+         [:div.card-content.has-text-centered.has-text-weight-semibold.pb-4
+          [:p "Elapsed Time:"]
+          [:div.is-size-1 [running-clock (:started_at track) offset]]]]
+        [:div.card.my-3>div.card-content
+         (if creator
+           [comment-form]
+           [creator-form])]
+        [:div.card.my-3>div.card-content
+         [list-comments]]
+        (if creator
+          [:div.card.my-3>div.card-content>div.buttons.columns>button.button.is-danger.is-large.column
+           {:on-click #(rf/dispatch [:finish-track])}
+           "I'm done, kill this sesh!!"])]))])
 
 (defn show-closed-track [track]
   [:div
