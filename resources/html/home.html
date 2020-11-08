@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 <html>
-  <head>
-      <meta charset="UTF-8"/>
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <title>Jamtap</title>
-  </head>
-  <body>
-    
-    <div id="app">Welcome to Jamtap! Loading...</div>
 
-    <!-- scripts and styles -->
-    {% style "/assets/bulma/css/bulma.min.css" %}
-    {% style "/assets/material-icons/css/material-icons.min.css" %}
-    {% style "/css/screen.css" %}
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jamtap</title>
 
-    <script type="text/javascript">
-        var csrfToken = "{{csrf-token}}";
-    </script>
-    {% script "/js/app.js" %}
-  </body>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+</head>
+
+<body>
+
+  <div id="app">Welcome to Jamtap! Loading...</div>
+
+  <!-- scripts and styles -->
+  {% style "/assets/bulma/css/bulma.min.css" %}
+  {% style "/assets/material-icons/css/material-icons.min.css" %}
+  {% style "/css/screen.css" %}
+
+  <script type="text/javascript">
+    var csrfToken = "{{csrf-token}}";
+  </script>
+  {% script "/js/app.js" %}
+</body>
+
 </html>
