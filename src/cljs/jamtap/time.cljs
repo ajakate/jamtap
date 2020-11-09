@@ -68,3 +68,8 @@
   (let [start-millis (- (c/to-long server-time) offset)
         running (- (current-time) start-millis)]
     (format-millis running)))
+
+(defn time-difference [begin end]
+  (let [start-millis (c/to-long begin)
+        end-millis (c/to-long end)]
+    (format-millis (- end-millis start-millis))))

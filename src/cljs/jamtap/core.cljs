@@ -85,12 +85,14 @@
        {:on-click (:top-button-func vars)}
        (:top-button-name vars)]]
      [:p.title.is-4 (:title vars)]
-     (for [{:keys [id creator name started_at]} tracks]
+     (for [{:keys [id creator name started_at finished_at]} tracks]
        ^{:key id}
        [:div.card.my-3>div.card-content>div.columns.buttons
         [:div.column
          [:p.title.is-5 name]
          [:p.subtitle.is-6.is-italic creator]
+         (if (not= nil finished_at)
+           [:p.subtitle.is-6>b (str "Length: " (jtime/time-difference started_at finished_at))])
          [:time (format-timestamp started_at)]]
         [:div.column
          (if (= :old tracks-type)
